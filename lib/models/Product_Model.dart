@@ -4,6 +4,7 @@ class ProductModel {
   final price;
   final String description;
   final String image;
+  final String? category;
   final RatingModel? rating;
   //1
   //كل مقابل ماب هعمل مودل ليها عشان لو افترضنا ان الماب دي جواها متغيرات كتير
@@ -17,6 +18,7 @@ class ProductModel {
     required this.price,
     required this.description,
     required this.image,
+    this.category,
     this.rating,
     // required this.test
   });
@@ -27,6 +29,7 @@ class ProductModel {
       image: jasonData['image'],
       price: jasonData['price'],
       title: jasonData['title'],
+      category: jasonData['category'],
       rating: RatingModel.fromjson(jasonData['rating']),
       //2
       // test: DD(
