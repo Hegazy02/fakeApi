@@ -17,7 +17,7 @@ CustombottomSheet(
       context: context,
       builder: ((context) {
         return Container(
-          height: 120,
+          height: 320,
           child: Column(
             children: [
               ListTile(

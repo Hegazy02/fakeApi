@@ -4,7 +4,7 @@ class ProductModel {
   final price;
   final String description;
   final String image;
-  final RatingModel rating;
+  final RatingModel? rating;
   //1
   //كل مقابل ماب هعمل مودل ليها عشان لو افترضنا ان الماب دي جواها متغيرات كتير
   //كدا هضطر اعمل لكل متغير فيهم تعريف في كلاس برودكت مودل ودا مش شيئ صحيح ابدا
@@ -17,7 +17,7 @@ class ProductModel {
     required this.price,
     required this.description,
     required this.image,
-    required this.rating,
+    this.rating,
     // required this.test
   });
   factory ProductModel.fromjson(jasonData) {
@@ -46,10 +46,11 @@ class ProductModel {
 }
 
 class RatingModel {
-  final rate;
-  final int count;
-  RatingModel({required this.rate, required this.count});
+  var rate;
+  var count;
+  RatingModel({this.rate, this.count});
   factory RatingModel.fromjson(jsonData) {
+    jsonData = jsonData == null ? {"rate": 0, "count": 0} : jsonData;
     return RatingModel(rate: jsonData['rate'], count: jsonData['count']);
   }
 }

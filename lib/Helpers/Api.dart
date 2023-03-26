@@ -7,24 +7,34 @@ class Api {
   //////////////// get
   get({required String link}) async {
     Uri url = Uri.parse(link);
-    http.Response response = await http.get(url);
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception(
-          "there is a problem with status code : ${response.statusCode}");
+    try {
+      http.Response response = await http.get(url);
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception(
+            "there is a problem with status code : ${response.statusCode}");
+      }
+    } catch (e) {
+      print("get error :$e");
     }
   }
 
+//بنكتب الهيدرز لو عايزين نبعت بيانات للباك اند  post - put - patch....
+
 //////////////// add
-  post(
+  Future<ProductModel> post(
       {required String title,
-      required String price,
+      required final price,
       required String description,
       required String image,
       required String category,
       String? token}) async {
     Uri url = Uri.parse("https://fakestoreapi.com/products");
+
+    print(
+        "title :$title, price :$price, description :$description, image :$image, category :$category");
+
     Map<String, String>? headrs = {
       "Accept": "application/json", //نوع البيانات الي بستقبلها
       "Content-Type":
@@ -41,23 +51,26 @@ class Api {
           "price": price,
           "description": description,
           "image": image,
-          "category": category
+          "category": category,
         },
         headers: headrs);
-    print(response.body);
     Map data = jsonDecode(response.body);
+    print("@@@@@@@@@data $data");
     return ProductModel.fromjson(data);
   }
 
-//////////////// update
-  Future<ProductModel> put(
-      {required String title,
-      required String price,
-      required String description,
-      required String image,
-      required String category,
+//////////////// update بتبدل البيانات القديمه كلها بالجديده
+  put(
+      {String? title,
+      final price,
+      String? description,
+      String? image,
+      String? category,
+      required int id,
       String? token}) async {
-    Uri url = Uri.parse("https://fakestoreapi.com/products");
+    print(
+        "title :$title, price :$price, description :$description, image :$image, category :$category, id :$id,");
+    Uri url = Uri.parse("https://fakestoreapi.com/products/$id");
     Map<String, String>? headrs = {
       "Content-Type":
           "application/x-www-form-urlencoded" // نوع البيانات الي ببعتها
@@ -68,7 +81,7 @@ class Api {
         {"Authorization": "Bearer ${token}"},
       );
     }
-    http.Response response = await http.post(url,
+    http.Response response = await http.put(url,
         body: {
           "title": title,
           "price": price,
@@ -77,8 +90,13 @@ class Api {
           "category": category
         },
         headers: headrs);
-    print(response.body);
-    Map data = jsonDecode(response.body);
-    return ProductModel.fromjson(data);
+    if (response.statusCode == 200) {
+      Map data = jsonDecode(response.body);
+      print("@@@@@@@@@@@@data $data");
+      return data;
+    } else {
+      throw Exception(
+          "###################ther is an error with status code :${response.statusCode}");
+    }
   }
 }

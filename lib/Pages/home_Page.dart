@@ -17,19 +17,39 @@ class _homePageState extends State<homePage> {
   String? image;
   String? category;
   List proList = [];
+  bool isSent = false;
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-  validation() {
+  validation(bool test) async {
     if (formKey.currentState!.validate()) {
-      Api().post(
-        title: title!,
-        price: price!,
-        image: image!,
-        description: description!,
-        category: category!,
-      );
+      isSent = true;
+
+      try {
+        if (test) {
+          await Api().post(
+            title: title!,
+            price: price,
+            image: image!,
+            description: description!,
+            category: category!,
+          );
+          print("###add Success");
+        } else {
+          await Api().put(
+            id: 1,
+            title: title!,
+            price: price,
+            image: image!,
+            description: description!,
+            category: category!,
+          );
+          print("###update Success");
+        }
+      } catch (e) {
+        print("####there is an error here : $e");
+      }
     } else {
-      print("Fill the textfields");
+      print("###Fill the textfields");
     }
   }
 
@@ -101,19 +121,43 @@ class _homePageState extends State<homePage> {
                     ),
                   ],
                 )),
-            ElevatedButton(
-                onPressed: () async {
-                  print("pressed");
-                  validation();
-                  CustombottomSheet(context, setState,
-                      title: title!,
-                      price: price!,
-                      image: image!,
-                      category: category!,
-                      description: description!);
-                  // proList = await AllProductsService().getAllProducts();
-                },
-                child: Text("Add")),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                ElevatedButton(
+                    onPressed: () async {
+                      print("pressed");
+                      await validation(true);
+                      if (isSent) {
+                        CustombottomSheet(context, setState,
+                            title: title!,
+                            price: price!,
+                            image: image!,
+                            category: category!,
+                            description: description!);
+                      }
+
+                      // proList = await AllProductsService().getAllProducts();
+                    },
+                    child: Text("Add")),
+                ElevatedButton(
+                    onPressed: () async {
+                      print("pressed");
+                      await validation(false);
+                      if (isSent) {
+                        CustombottomSheet(context, setState,
+                            title: title!,
+                            price: price!,
+                            image: image!,
+                            category: category!,
+                            description: description!);
+                      }
+
+                      // proList = await AllProductsService().getAllProducts();
+                    },
+                    child: Text("Update")),
+              ],
+            ),
             FutureBuilder(
                 //انا عايز اعمل فنكشن ترجعلي الفيوتشر ليست عشان احطها هنا
                 //وكل الي عايز اديهولها هو الليست الي جايه من الابي اي دي وعايزها تكون جوا كلاس
@@ -133,9 +177,8 @@ class _homePageState extends State<homePage> {
                             Container(
                                 height: 200,
                                 width: 200,
-                                child: snapshot.data![index].image != null
-                                    ? Image.network(snapshot.data![index].image)
-                                    : CircularProgressIndicator()),
+                                child:
+                                    Image.network(snapshot.data![index].image)),
                             Text("price : ${snapshot.data![index].price}")
                           ],
                         ),
